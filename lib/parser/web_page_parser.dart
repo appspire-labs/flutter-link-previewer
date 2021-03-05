@@ -6,7 +6,7 @@ class WebPageParser {
 
     return getDataFromResponse(response, url);
   }
-  Uri createUri(String url, [Map<String, dynamic> queryParameters]) {
+  static Uri createUri(String url, [Map<String, dynamic> queryParameters]) {
   var isHttp = false;
   if (url.startsWith('https://') || (isHttp = url.startsWith('http://'))) {
     var authority = url.substring((isHttp ? 'http://' : 'https://').length);
