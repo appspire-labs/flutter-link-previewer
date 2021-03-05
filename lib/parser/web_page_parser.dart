@@ -2,10 +2,35 @@ part of link_previewer;
 
 class WebPageParser {
   static Future<Map> getData(String url) async {
-    var response = await http.get(url);
+    var response = await http.get(createUri(url));
 
     return getDataFromResponse(response, url);
   }
+  Uri createUri(String url, [Map<String, dynamic> queryParameters]) {
+  var isHttp = false;
+  if (url.startsWith('https://') || (isHttp = url.startsWith('http://'))) {
+    var authority = url.substring((isHttp ? 'http://' : 'https://').length);
+    String path;
+    final index = authority.indexOf('/');
+
+    if (-1 == index) {
+      path = '';
+    } else {
+      path = authority.substring(index);
+      authority = authority.substring(0, authority.length - path.length);
+    }
+
+    if (isHttp) {
+      return Uri.http(authority, path, queryParameters);
+    } else {
+      return Uri.https(authority, path, queryParameters);
+    }
+  } else if (url.startsWith('localhost')) {
+    return createUri('https://' + url, queryParameters);
+  }
+
+  throw Exception('Unsupported scheme');
+}
 
   static Map<dynamic, dynamic> getDataFromResponse(
       http.Response response, String url) {
